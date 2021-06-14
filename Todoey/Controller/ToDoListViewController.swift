@@ -12,11 +12,13 @@ import CoreData
 class ToDoListViewController: UITableViewController {
     
     // MARK: - Property
-    var itemArray = [Item]()
+    private var itemArray = [Item]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    private let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    let context = AppDelegate().persistentContainer.viewContext
+    private let context = AppDelegate().persistentContainer.viewContext
+    
+    private let request: NSFetchRequest<Item> = Item.fetchRequest()
     
     // MARK: - Life cycle
     override func viewDidLoad() {
@@ -24,7 +26,7 @@ class ToDoListViewController: UITableViewController {
         
         print(dataFilePath)
         
-        loadItems()
+        loadItems(with: request)
         
     }
     
@@ -53,7 +55,10 @@ class ToDoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // print(itamArray[indexPath.row])
         
-        print("CellForRowAt")
+        print("CellForRowAt \(indexPath.row)")
+        
+        //        context.delete(itemArray[indexPath.row])
+        //        itemArray.remove(at: indexPath.row)
         
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
@@ -100,7 +105,7 @@ class ToDoListViewController: UITableViewController {
     // 儲存資料
     private func setItems() {
         do {
-          try context.save()
+            try context.save()
         } catch {
             print("Error saving context \(error)" )
         }
@@ -108,15 +113,31 @@ class ToDoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     // 讀取資料
-    private func loadItems() {
+    private func loadItems(with request: NSFetchRequest<Item>) {
         
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
         
         do {
-          itemArray = try context.fetch(request)
+            itemArray = try context.fetch(request)
         } catch {
             print("Error fetching data from context \(error)")
         }
     }
 }
-
+// MARK: - SearchBar Delegate
+extension ToDoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        guard let text = searchBar.text else { return }
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        loadItems(with: request)
+        
+        tableView.reloadData()
+    }
+}
