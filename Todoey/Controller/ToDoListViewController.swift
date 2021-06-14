@@ -20,6 +20,12 @@ class ToDoListViewController: UITableViewController {
     
     private let request: NSFetchRequest<Item> = Item.fetchRequest()
     
+    var selectMuenItem: Menu? {
+        didSet {
+            loadItems(with: request)
+        }
+    }
+    
     // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,6 +87,7 @@ class ToDoListViewController: UITableViewController {
             
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectMuenItem
             
             self.itemArray.append(newItem)
             
@@ -113,7 +120,13 @@ class ToDoListViewController: UITableViewController {
     // 讀取資料
     private func loadItems(with request: NSFetchRequest<Item>) {
         
+        guard let name = selectMuenItem?.name else {
+            return
+        }
         
+        let predicate = NSPredicate(format: "parentCategory.name MATCHES %@", name)
+        
+        request.predicate = predicate
         
         do {
             itemArray = try context.fetch(request)

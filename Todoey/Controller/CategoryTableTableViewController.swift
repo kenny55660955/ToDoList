@@ -66,24 +66,28 @@ class CategoryTableTableViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "MenuCell", for: indexPath)
         
-        let menuItem = menuItems[indexPath.row]
-        
         cell.textLabel?.text = menuItems[indexPath.row].name
-        
-        //Ternary operator
-        // Value = condition ? valueIfTrue : valueIfFalse
-        cell.accessoryType = menuItem.done == true ? .checkmark : .none
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        menuItems[indexPath.row].done = !menuItems[indexPath.row].done
+        performSegue(withIdentifier: "goToItem", sender: self)
         
-        self.setItems()
+        
         
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let destinationVC = segue.destination as? ToDoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC?.selectMuenItem = menuItems[indexPath.row]
+        }
+        
     }
     
     // MARK: - Store Method
