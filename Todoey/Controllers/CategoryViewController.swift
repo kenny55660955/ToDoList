@@ -14,7 +14,7 @@ class CategoryViewController: UITableViewController {
     
     let realm = try! Realm()
     
-    var categories = [Menu]()
+    var categories: Results<Menu>?
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
@@ -29,7 +29,9 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return categories.count
+        print("Count \(categories?.count)")
+        
+        return categories?.count ?? 1
         
     }
     
@@ -37,7 +39,7 @@ class CategoryViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
         
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Inside"
         
         return cell
         
@@ -54,7 +56,7 @@ class CategoryViewController: UITableViewController {
         let destinationVC = segue.destination as! TodoListViewController
         
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categories[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
     
@@ -75,8 +77,11 @@ class CategoryViewController: UITableViewController {
     
     func loadCategories() {
         
+        let meun = realm.objects(Menu.self)
         
+        categories = meun
         
+        tableView.reloadData()
     }
     
     
@@ -91,9 +96,8 @@ class CategoryViewController: UITableViewController {
         let action = UIAlertAction(title: "Add", style: .default) { (action) in
             
             let newCategory = Menu()
-            newCategory.name = textField.text!
             
-            self.categories.append(newCategory)
+            newCategory.name = textField.text!
             
             self.saveCategories(menu: newCategory)
             
