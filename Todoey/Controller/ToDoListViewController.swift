@@ -77,8 +77,6 @@ class ToDoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // What should happen when user clicks add item button
             
-            
-            
             let newItem = Item(context: self.context)
             
             newItem.title = textField.text!
@@ -139,5 +137,16 @@ extension ToDoListViewController: UISearchBarDelegate {
         loadItems(with: request)
         
         tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            
+            loadItems(with: request)
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }

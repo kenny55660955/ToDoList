@@ -3,8 +3,15 @@
     <entity name="Item" representedClassName=".Item" syncable="YES" codeGenerationType="class">
         <attribute name="done" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String"/>
+        <relationship name="parentCategory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Menu" inverseName="items" inverseEntity="Menu"/>
+    </entity>
+    <entity name="Menu" representedClassName=".Menu" syncable="YES" codeGenerationType="class">
+        <attribute name="done" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Item" inverseName="parentCategory" inverseEntity="Item"/>
     </entity>
     <elements>
-        <element name="Item" positionX="-54" positionY="-9" width="128" height="59"/>
+        <element name="Item" positionX="4417.55859375" positionY="375.34375" width="128" height="88"/>
+        <element name="Menu" positionX="4187.5" positionY="374.12109375" width="128" height="88"/>
     </elements>
 </model>
