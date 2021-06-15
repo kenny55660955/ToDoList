@@ -14,12 +14,12 @@ class CategoryViewController: UITableViewController {
     var categories = [Menu]()
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadCategories()
-
+        
     }
     
     //MARK: - TableView Datasource Methods
@@ -39,7 +39,7 @@ class CategoryViewController: UITableViewController {
         return cell
         
     }
-
+    
     
     //MARK: - TableView Delegate Methods
     
@@ -77,14 +77,14 @@ class CategoryViewController: UITableViewController {
         } catch {
             print("Error loading categories \(error)")
         }
-       
+        
         tableView.reloadData()
         
     }
     
     
     //MARK: - Add New Categories
-
+    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
         var textField = UITextField()
@@ -113,8 +113,13 @@ class CategoryViewController: UITableViewController {
         
     }
     
-
-    
-    
-    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let deleteItem = categories.remove(at: indexPath.row)
+            context.delete(deleteItem)
+            AppDelegate().saveContext()
+        }
+        
+        tableView.reloadData()
+    }
 }
